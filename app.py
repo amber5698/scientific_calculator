@@ -1,44 +1,39 @@
 import streamlit as st
 
 # Title of the app
-st.title("Scientific Calculator")
+st.title("📐 Scientific Calculator")
 
-# Input for numbers
-st.write("Enter numbers you want to calculate:")
+# Description
+st.write("Welcome to the Scientific Calculator! 🎉")
+st.write("Enter as many numbers as you want and select an operation to calculate.")
 
-# Initialize an empty list to store numbers
-numbers = []
+# Initialize a session state for numbers
+if 'numbers' not in st.session_state:
+    st.session_state.numbers = []
 
-# Create a session state to keep track of the number of inputs
-if 'input_count' not in st.session_state:
-    st.session_state.input_count = 0
-
-# Function to add more input fields
-def add_input():
-    st.session_state.input_count += 1
+# Function to add a number input field
+def add_number_input():
+    st.session_state.numbers.append(0)
 
 # Button to add more input fields
-st.button("Add another number", on_click=add_input)
+if st.button("Add Another Number ➕"):
+    add_number_input()
 
-# Create input fields based on the count in session state
-for i in range(st.session_state.input_count):
-    num_input = st.text_input(f"Enter number {i + 1} (or type 'done' to finish):", key=f"input_{i}")
-
-    if num_input.lower() == 'done':
-        break
-    
-    try:
-        number = float(num_input)
-        numbers.append(number)
-    except ValueError:
-        if num_input:  # Check if input is not empty
-            st.error("Please enter a valid number.")
+# Display input fields for each number
+for i in range(len(st.session_state.numbers)):
+    num_input = st.number_input(f"Enter number {i + 1}:", key=f"input_{i}", format="%.2f")
+    if num_input:
+        st.session_state.numbers[i] = num_input
 
 # Operations selection
 operation = st.selectbox("Select operation:", ["Add", "Subtract", "Multiply", "Divide"])
 
-if st.button("Calculate"):
-    if numbers:  # Ensure there are numbers to calculate
+if st.button("Calculate 🔍"):
+    numbers = st.session_state.numbers  # Get the list of numbers
+
+    if len(numbers) == 0 or all(num == 0 for num in numbers):
+        st.error("Please enter at least one valid number.")
+    else:
         if operation == "Add":
             result = sum(numbers)
         elif operation == "Subtract":
@@ -58,6 +53,8 @@ if st.button("Calculate"):
                     break
         
         if result is not None:
-            st.success(f"The result is: {result}")
-    else:
-        st.error("Please enter at least one number.")
+            st.success(f"The result is: **{result:.2f}**")
+
+# Clear button to reset the calculator
+if st.button("Clear All 🗑️"):
+    st.session_state.numbers.clear()
