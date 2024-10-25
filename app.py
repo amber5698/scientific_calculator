@@ -4,73 +4,63 @@ import math
 # Set the title of the app
 st.title("🧮 Scientific Calculator")
 
-# Initialize the expression variable
-if 'expression' not in st.session_state:
-    st.session_state.expression = ""
+# Create a sidebar for operations
+st.sidebar.header("Select Operation")
+operation = st.sidebar.selectbox("Choose an operation:", 
+                                   ["Addition", "Subtraction", "Multiplication", 
+                                    "Division", "Power", "Square Root", 
+                                    "Sine", "Cosine", "Tangent"])
 
-# Function to update the expression
-def update_expression(value):
-    st.session_state.expression += str(value)
+# Input fields for numbers
+num1 = st.number_input("Enter first number:", format="%.2f")
+num2 = st.number_input("Enter second number:", format="%.2f", value=0.0)
 
-# Function to clear the expression
-def clear_expression():
-    st.session_state.expression = ""
+# Display the operation selected
+st.write(f"**Selected Operation:** {operation}")
 
-# Function to calculate the result
-def calculate_result():
-    try:
-        # Evaluate the expression safely
-        result = eval(st.session_state.expression)
-        st.session_state.expression = str(result)
-    except Exception as e:
-        st.error("Invalid Input")
-        clear_expression()
+# Calculate and display results based on the selected operation
+if st.button("Calculate"):
+    if operation == "Addition":
+        result = num1 + num2
+        st.success(f"The result of **{num1} + {num2}** is **{result:.2f}**")
 
-# Display the current expression
-st.write(f"**Expression:** {st.session_state.expression}")
+    elif operation == "Subtraction":
+        result = num1 - num2
+        st.success(f"The result of **{num1} - {num2}** is **{result:.2f}**")
 
-# Create buttons for numbers and operations
-col1, col2, col3 = st.columns(3)
+    elif operation == "Multiplication":
+        result = num1 * num2
+        st.success(f"The result of **{num1} * {num2}** is **{result:.2f}**")
 
-with col1:
-    for i in range(1, 10):
-        if st.button(str(i)):
-            update_expression(i)
+    elif operation == "Division":
+        if num2 == 0:
+            st.error("Error! Division by zero.")
+        else:
+            result = num1 / num2
+            st.success(f"The result of **{num1} / {num2}** is **{result:.2f}**")
 
-with col2:
-    if st.button("0"):
-        update_expression(0)
-    if st.button("+"):
-        update_expression("+")
-    if st.button("-"):
-        update_expression("-")
-    if st.button("*"):
-        update_expression("*")
-    if st.button("/"):
-        update_expression("/")
+    elif operation == "Power":
+        result = math.pow(num1, num2)
+        st.success(f"The result of **{num1} ^ {num2}** is **{result:.2f}**")
 
-with col3:
-    if st.button("="):
-        calculate_result()
-    if st.button("C"):
-        clear_expression()
-    if st.button("sin"):
-        update_expression("math.sin(math.radians(")
-    if st.button("cos"):
-        update_expression("math.cos(math.radians(")
-    if st.button("tan"):
-        update_expression("math.tan(math.radians(")
-    if st.button("sqrt"):
-        update_expression("math.sqrt(")
+    elif operation == "Square Root":
+        if num1 < 0:
+            st.error("Error! Square root of negative number.")
+        else:
+            result = math.sqrt(num1)
+            st.success(f"√{num1} is **{result:.2f}**")
 
-# Display the updated expression with parentheses for functions
-if "math.sin" in st.session_state.expression or "math.cos" in st.session_state.expression or "math.tan" in st.session_state.expression or "math.sqrt" in st.session_state.expression:
-    parentheses_count = st.session_state.expression.count("(")
-    if parentheses_count > 0:
-        closing_parentheses = ")" * parentheses_count
-        st.write(f"**Complete Expression:** {st.session_state.expression}{closing_parentheses}")
-else:
-    st.write(f"**Complete Expression:** {st.session_state.expression}")
+    elif operation == "Sine":
+        result = math.sin(math.radians(num1))
+        st.success(f"sin({num1}) is **{result:.2f}**")
+
+    elif operation == "Cosine":
+        result = math.cos(math.radians(num1))
+        st.success(f"cos({num1}) is **{result:.2f}**")
+
+    elif operation == "Tangent":
+        result = math.tan(math.radians(num1))
+        st.success(f"tan({num1}) is **{result:.2f}**")
 
 # Add some styling to make it more attractive
 st.markdown("""
