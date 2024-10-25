@@ -4,83 +4,73 @@ import math
 # Set the title of the app
 st.title("🧮 Scientific Calculator")
 
-# Create a sidebar for operations
-st.sidebar.header("Select Operation")
-operation = st.sidebar.selectbox("Choose an operation:", 
-                                   ["Addition", "Subtraction", "Multiplication", 
-                                    "Division", "Power", "Square Root", 
-                                    "Sine", "Cosine", "Tangent"])
+# Initialize the expression variable
+if 'expression' not in st.session_state:
+    st.session_state.expression = ""
 
-# Input field for numbers
-numbers = st.text_input("Enter numbers separated by commas (e.g., 1, 2, 3):")
+# Function to update the expression
+def update_expression(value):
+    st.session_state.expression += str(value)
 
-# Process input numbers
-if numbers:
-    num_list = [float(num) for num in numbers.split(",")]
+# Function to clear the expression
+def clear_expression():
+    st.session_state.expression = ""
 
-# Display the operation selected
-st.write(f"**Selected Operation:** {operation}")
+# Function to calculate the result
+def calculate_result():
+    try:
+        # Evaluate the expression safely
+        result = eval(st.session_state.expression)
+        st.session_state.expression = str(result)
+    except Exception as e:
+        st.error("Invalid Input")
+        clear_expression()
 
-# Calculate and display results based on the selected operation
-if st.button("Calculate"):
-    if operation == "Addition":
-        result = sum(num_list)
-        st.success(f"The result of **{' + '.join(map(str, num_list))}** is **{result:.2f}**")
+# Display the current expression
+st.write(f"**Expression:** {st.session_state.expression}")
 
-    elif operation == "Subtraction":
-        result = num_list[0] - sum(num_list[1:])
-        st.success(f"The result of **{' - '.join(map(str, num_list))}** is **{result:.2f}**")
+# Create buttons for numbers and operations
+col1, col2, col3 = st.columns(3)
 
-    elif operation == "Multiplication":
-        result = math.prod(num_list)
-        st.success(f"The result of **{' * '.join(map(str, num_list))}** is **{result:.2f}**")
+with col1:
+    for i in range(1, 10):
+        if st.button(str(i)):
+            update_expression(i)
 
-    elif operation == "Division":
-        if 0 in num_list[1:]:
-            st.error("Error! Division by zero.")
-        else:
-            result = num_list[0]
-            for num in num_list[1:]:
-                result /= num
-            st.success(f"The result of **{' / '.join(map(str, num_list))}** is **{result:.2f}**")
+with col2:
+    if st.button("0"):
+        update_expression(0)
+    if st.button("+"):
+        update_expression("+")
+    if st.button("-"):
+        update_expression("-")
+    if st.button("*"):
+        update_expression("*")
+    if st.button("/"):
+        update_expression("/")
 
-    elif operation == "Power":
-        if len(num_list) != 2:
-            st.error("Power operation requires exactly two numbers.")
-        else:
-            result = math.pow(num_list[0], num_list[1])
-            st.success(f"The result of **{num_list[0]} ^ {num_list[1]}** is **{result:.2f}**")
+with col3:
+    if st.button("="):
+        calculate_result()
+    if st.button("C"):
+        clear_expression()
+    if st.button("sin"):
+        update_expression("math.sin(math.radians(")
+    if st.button("cos"):
+        update_expression("math.cos(math.radians(")
+    if st.button("tan"):
+        update_expression("math.tan(math.radians(")
+    if st.button("sqrt"):
+        update_expression("math.sqrt(")
 
-    elif operation == "Square Root":
-        if len(num_list) != 1:
-            st.error("Square root operation requires exactly one number.")
-        else:
-            if num_list[0] < 0:
-                st.error("Error! Square root of negative number.")
-            else:
-                result = math.sqrt(num_list[0])
-                st.success(f"√{num_list[0]} is **{result:.2f}**")
-
-    elif operation == "Sine":
-        if len(num_list) != 1:
-            st.error("Sine operation requires exactly one number.")
-        else:
-            result = math.sin(math.radians(num_list[0]))
-            st.success(f"sin({num_list[0]}) is **{result:.2f}**")
-
-    elif operation == "Cosine":
-        if len(num_list) != 1:
-            st.error("Cosine operation requires exactly one number.")
-        else:
-            result = math.cos(math.radians(num_list[0]))
-            st.success(f"cos({num_list[0]}) is **{result:.2f}**")
-
-    elif operation == "Tangent":
-        if len(num_list) != 1:
-            st.error("Tangent operation requires exactly one number.")
-        else:
-            result = math.tan(math.radians(num_list[0]))
-            st.success(f"tan({num_list[0]}) is **{result:.2f}**")
+# Display the updated expression with parentheses for functions
+if "math.sin" in st.session_state.expression or "math.cos" in st.session_state.expression or "math.tan" in st.session_state.expression or "math.sqrt" in st.session_state.expression:
+    parentheses_count = st.session_state.expression.count("(")
+    if parentheses_count > 0:
+        closing_parentheses = ")" * parentheses_count
+        st.write(f"**Complete Expression:** {st.session_state.expression}{closing_parentheses}")
+else:
+    st.write(f"**Complete Expression:** {st.session_state.expression}")
 
 # Add some styling to make it more attractive
 st.markdown("""
