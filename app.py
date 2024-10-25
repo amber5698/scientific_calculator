@@ -54,4 +54,24 @@ if st.button("Calculate"):
         result = math.sin(math.radians(num1))
         st.success(f"sin({num1}) is **{result:.2f}**")
 
-    elif operation
+    elif operation == "Cosine":
+        result = math.cos(math.radians(num1))
+        st.success(f"cos({num1}) is **{result:.2f}**")
+
+    elif operation == "Tangent":
+        result = math.tan(math.radians(num1))
+        st.success(f"tan({num1}) is **{result:.2f}**")
+
+# Add some styling to make it more attractive
+st.markdown("""
+<style>
+    .stButton > button {
+        background-color: #4CAF50; /* Green */
+        color: white;
+        font-size: 20px;
+    }
+    .stButton > button:hover {
+        background-color: #45a049;
+    }
+</style>
+""", unsafe_allow_html=True)
