@@ -7,9 +7,9 @@ st.title("Scientific Calculator")
 st.write("Enter numbers you want to calculate:")
 numbers = []
 
-# Allow users to input multiple numbers
+# Allow users to input multiple numbers until they type 'done'
 while True:
-    num_input = st.text_input("Enter a number (or type 'done' to finish):")
+    num_input = st.text_input("Enter a number (or type 'done' to finish):", key=f"input_{len(numbers)}")
     
     if num_input.lower() == 'done':
         break
