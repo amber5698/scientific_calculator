@@ -1,60 +1,64 @@
 import streamlit as st
+import math
 
 # Title of the app
-st.title("📐 Scientific Calculator")
+st.title("📚 Student-Friendly Scientific Calculator")
 
-# Description
-st.write("Welcome to the Scientific Calculator! 🎉")
-st.write("Enter as many numbers as you want and select an operation to calculate.")
+# Sidebar for navigation
+st.sidebar.header("Choose an Operation")
+operation = st.sidebar.selectbox(
+    "Select Operation",
+    ("Addition", "Subtraction", "Multiplication", "Division", "Power", "Square Root", "Sine", "Cosine", "Tangent")
+)
 
-# Initialize a session state for numbers
-if 'numbers' not in st.session_state:
-    st.session_state.numbers = []
+# Input fields
+if operation in ["Addition", "Subtraction", "Multiplication", "Division", "Power"]:
+    num1 = st.number_input("Enter first number:", format="%.2f")
+    num2 = st.number_input("Enter second number:", format="%.2f")
 
-# Function to add a number input field
-def add_number_input():
-    st.session_state.numbers.append(0)
+if operation in ["Square Root", "Sine", "Cosine", "Tangent"]:
+    num = st.number_input("Enter the number:", format="%.2f")
 
-# Button to add more input fields
-if st.button("Add Another Number ➕"):
-    add_number_input()
+# Calculate and display results
+if st.button("Calculate"):
+    if operation == "Addition":
+        result = num1 + num2
+        st.success(f"The result of {num1} + {num2} is {result:.2f}")
+    
+    elif operation == "Subtraction":
+        result = num1 - num2
+        st.success(f"The result of {num1} - {num2} is {result:.2f}")
+    
+    elif operation == "Multiplication":
+        result = num1 * num2
+        st.success(f"The result of {num1} * {num2} is {result:.2f}")
+    
+    elif operation == "Division":
+        if num2 == 0:
+            st.error("Error! Division by zero.")
+        else:
+            result = num1 / num2
+            st.success(f"The result of {num1} / {num2} is {result:.2f}")
+    
+    elif operation == "Power":
+        result = math.pow(num1, num2)
+        st.success(f"The result of {num1} ^ {num2} is {result:.2f}")
 
-# Display input fields for each number
-for i in range(len(st.session_state.numbers)):
-    num_input = st.number_input(f"Enter number {i + 1}:", key=f"input_{i}", format="%.2f")
-    if num_input:
-        st.session_state.numbers[i] = num_input
+    elif operation == "Square Root":
+        if num < 0:
+            st.error("Error! Square root of negative number.")
+        else:
+            result = math.sqrt(num)
+            st.success(f"√{num} is {result:.2f}")
 
-# Operations selection
-operation = st.selectbox("Select operation:", ["Add", "Subtract", "Multiply", "Divide"])
+    elif operation == "Sine":
+        result = math.sin(math.radians(num))
+        st.success(f"sin({num}) is {result:.2f}")
 
-if st.button("Calculate 🔍"):
-    numbers = st.session_state.numbers  # Get the list of numbers
+    elif operation == "Cosine":
+        result = math.cos(math.radians(num))
+        st.success(f"cos({num}) is {result:.2f}")
 
-    if len(numbers) == 0 or all(num == 0 for num in numbers):
-        st.error("Please enter at least one valid number.")
-    else:
-        if operation == "Add":
-            result = sum(numbers)
-        elif operation == "Subtract":
-            result = numbers[0] - sum(numbers[1:]) if len(numbers) > 1 else numbers[0]
-        elif operation == "Multiply":
-            result = 1
-            for num in numbers:
-                result *= num
-        elif operation == "Divide":
-            result = numbers[0]
-            for num in numbers[1:]:
-                if num != 0:
-                    result /= num
-                else:
-                    st.error("Cannot divide by zero!")
-                    result = None
-                    break
-        
-        if result is not None:
-            st.success(f"The result is: **{result:.2f}**")
-
-# Clear button to reset the calculator
-if st.button("Clear All 🗑️"):
-    st.session_state.numbers.clear()
+    elif operation == "Tangent":
+        result = math.tan(math.radians(num))
+        st.success(f"tan({num}) is {result:.2f}")
