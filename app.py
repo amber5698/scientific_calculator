@@ -1,64 +1,77 @@
-import streamlit as st
+import tkinter as tk
+from tkinter import messagebox
 import math
 
-# Title of the app
-st.title("📚 Student-Friendly Scientific Calculator")
+class Calculator(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Scientific Calculator")
+        self.geometry("400x600")
+        self.resizable(0, 0)
 
-# Sidebar for navigation
-st.sidebar.header("Choose an Operation")
-operation = st.sidebar.selectbox(
-    "Select Operation",
-    ("Addition", "Subtraction", "Multiplication", "Division", "Power", "Square Root", "Sine", "Cosine", "Tangent")
-)
+        self.expression = ""
+        self.input_text = tk.StringVar()
 
-# Input fields
-if operation in ["Addition", "Subtraction", "Multiplication", "Division", "Power"]:
-    num1 = st.number_input("Enter first number:", format="%.2f")
-    num2 = st.number_input("Enter second number:", format="%.2f")
+        self.create_widgets()
 
-if operation in ["Square Root", "Sine", "Cosine", "Tangent"]:
-    num = st.number_input("Enter the number:", format="%.2f")
+    def create_widgets(self):
+        # Entry field
+        entry = tk.Entry(self, textvariable=self.input_text, font=('Arial', 24), bd=10, insertwidth=4, width=14, borderwidth=4)
+        entry.grid(row=0, column=0, columnspan=4)
 
-# Calculate and display results
-if st.button("Calculate"):
-    if operation == "Addition":
-        result = num1 + num2
-        st.success(f"The result of {num1} + {num2} is {result:.2f}")
-    
-    elif operation == "Subtraction":
-        result = num1 - num2
-        st.success(f"The result of {num1} - {num2} is {result:.2f}")
-    
-    elif operation == "Multiplication":
-        result = num1 * num2
-        st.success(f"The result of {num1} * {num2} is {result:.2f}")
-    
-    elif operation == "Division":
-        if num2 == 0:
-            st.error("Error! Division by zero.")
+        # Button layout
+        buttons = [
+            '7', '8', '9', '/',
+            '4', '5', '6', '*',
+            '1', '2', '3', '-',
+            '0', '.', '=', '+',
+            'sin', 'cos', 'tan', 'sqrt',
+            '(', ')', '^', 'C'
+        ]
+
+        row_val = 1
+        col_val = 0
+
+        for button in buttons:
+            action = lambda x=button: self.on_button_click(x)
+            tk.Button(self, text=button, padx=20, pady=20, font=('Arial', 18), command=action).grid(row=row_val, column=col_val)
+            col_val += 1
+            if col_val > 3:
+                col_val = 0
+                row_val += 1
+
+    def on_button_click(self, char):
+        if char == '=':
+            try:
+                result = str(eval(self.expression))
+                self.input_text.set(result)
+                self.expression = result
+            except Exception as e:
+                messagebox.showerror("Error", "Invalid Input")
+                self.expression = ""
+                self.input_text.set("")
+        elif char == 'C':
+            self.expression = ""
+            self.input_text.set("")
+        elif char in ['sin', 'cos', 'tan', 'sqrt']:
+            if char == 'sqrt':
+                result = math.sqrt(float(self.input_text.get()))
+                self.input_text.set(result)
+                self.expression = str(result)
+            else:
+                angle = float(self.input_text.get())
+                if char == 'sin':
+                    result = math.sin(math.radians(angle))
+                elif char == 'cos':
+                    result = math.cos(math.radians(angle))
+                elif char == 'tan':
+                    result = math.tan(math.radians(angle))
+                self.input_text.set(result)
+                self.expression = str(result)
         else:
-            result = num1 / num2
-            st.success(f"The result of {num1} / {num2} is {result:.2f}")
-    
-    elif operation == "Power":
-        result = math.pow(num1, num2)
-        st.success(f"The result of {num1} ^ {num2} is {result:.2f}")
+            self.expression += str(char)
+            self.input_text.set(self.expression)
 
-    elif operation == "Square Root":
-        if num < 0:
-            st.error("Error! Square root of negative number.")
-        else:
-            result = math.sqrt(num)
-            st.success(f"√{num} is {result:.2f}")
-
-    elif operation == "Sine":
-        result = math.sin(math.radians(num))
-        st.success(f"sin({num}) is {result:.2f}")
-
-    elif operation == "Cosine":
-        result = math.cos(math.radians(num))
-        st.success(f"cos({num}) is {result:.2f}")
-
-    elif operation == "Tangent":
-        result = math.tan(math.radians(num))
-        st.success(f"tan({num}) is {result:.2f}")
+if __name__ == "__main__":
+    app = Calculator()
+    app.mainloop()
